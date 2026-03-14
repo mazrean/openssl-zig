@@ -1052,6 +1052,7 @@ fn libprovider(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.bu
     lib.root_module.addCMacro("OPENSSL_NO_KTLS", "");
     lib.root_module.addCMacro("OPENSSL_NO_QUIC", "");
     lib.root_module.addCMacro("OPENSSL_NO_THREAD_POOL", "");
+    lib.root_module.addCMacro("OPENSSL_NO_DEFAULT_THREAD_POOL", "");
     lib.root_module.addCMacro("OPENSSL_CPUID_OBJ", "");
     if (lib.rootModuleTarget().os.tag.isDarwin()) {
         lib.root_module.addCMacro("OPENSSL_SYS_MACOSX", "1");
