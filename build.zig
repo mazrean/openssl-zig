@@ -56,11 +56,12 @@ fn libcrypto(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
     lib.root_module.addCMacro("OPENSSL_NO_JITTER", "");
     lib.root_module.addCMacro("OPENSSLDIR", "\"/usr/local/ssl\"");
     lib.root_module.addCMacro("OSSL_PKEY_PARAM_RSA_DERIVE_FROM_PQ", "1");
+    if (lib.rootModuleTarget().os.tag.isDarwin()) {
+        lib.root_module.addCMacro("OPENSSL_SYS_MACOSX", "1");
+        lib.root_module.addCMacro("OPENSSL_NO_APPLE_CRYPTO_RANDOM", "");
+    }
     if (lib.rootModuleTarget().isMinGW())
         lib.root_module.addCMacro("NOCRYPT", "1");
-    if (lib.rootModuleTarget().os.tag.isDarwin())
-        // CommonCrypto
-        lib.root_module.linkFramework("CoreServices", .{});
     if (lib.rootModuleTarget().cpu.arch.isRISCV())
         lib.root_module.addCMacro("__NR_riscv_hwprobe", "(__NR_arch_specific_syscall + 14)");
     lib.root_module.addCSourceFiles(.{
@@ -992,10 +993,10 @@ fn libssl(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin
             "ssl/ssl_conf.c",
             "ssl/ssl_err_legacy.c",
             "ssl/ssl_init.c",
-            // "ssl/ssl_lib.c",
+            "ssl/ssl_lib.c",
             "ssl/ssl_mcnf.c",
             "ssl/ssl_rsa.c",
-            // "ssl/ssl_rsa_legacy.c",
+            // "ssl/ssl_rsa_legacy.c", // requires deprecated RSA type
             "ssl/ssl_sess.c",
             "ssl/ssl_stat.c",
             "ssl/ssl_txt.c",
@@ -1052,10 +1053,8 @@ fn libprovider(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.bu
     lib.root_module.addCMacro("OPENSSL_NO_QUIC", "");
     lib.root_module.addCMacro("OPENSSL_CPUID_OBJ", "");
     if (lib.rootModuleTarget().os.tag.isDarwin()) {
-        // CommonCrypto
-        lib.root_module.linkFramework("CoreServices", .{});
         lib.root_module.addCMacro("OPENSSL_SYS_MACOSX", "1");
-        lib.root_module.addSystemIncludePath(.{ .cwd_relative = "/usr/include" });
+        lib.root_module.addCMacro("OPENSSL_NO_APPLE_CRYPTO_RANDOM", "");
     }
     if (lib.rootModuleTarget().isMinGW())
         lib.root_module.addCMacro("NOCRYPT", "1");
